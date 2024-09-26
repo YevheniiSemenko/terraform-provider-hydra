@@ -15,7 +15,6 @@ func TestAccResourceOAuth2Client(t *testing.T) {
 				Config: testAccResourceOAuth2PublicClientConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("hydra_oauth2_client.public", "client_name", "public"),
-					resource.TestCheckResourceAttr("hydra_oauth2_client.public", "metadata.first_party", "true"),
 					resource.TestCheckResourceAttr("hydra_oauth2_client.public", "redirect_uris.#", "1"),
 					resource.TestCheckResourceAttr("hydra_oauth2_client.public", "redirect_uris.0", "http://localhost:8080/callback"),
 					resource.TestCheckResourceAttr("hydra_oauth2_client.public", "response_types.#", "1"),
@@ -59,9 +58,6 @@ provider "hydra" {
 
 resource "hydra_oauth2_client" "public" {
 	client_name = "public"
-	metadata = {
-		"first_party" = true
-	}
 	redirect_uris = ["http://localhost:8080/callback"]
 	response_types = ["code"]
 	token_endpoint_auth_method = "none"
