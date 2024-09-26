@@ -422,7 +422,7 @@ func dataFromClient(data *schema.ResourceData, oAuthClient *hydra.OAuth2Client) 
 	dataFromJWKS(data, jwks, "jwk")
 	data.Set("jwks_uri", oAuthClient.GetJwksUri())
 	data.Set("logo_uri", oAuthClient.GetLogoUri())
-	if metadata := oAuthClient.Metadata; metadata != nil {
+	if metadata, ok := oAuthClient.Metadata.(map[string]interface{}); ok && len(metadata) > 0 {
 		metadataJSON, err := json.Marshal(metadata)
 		if err != nil {
 			return err
