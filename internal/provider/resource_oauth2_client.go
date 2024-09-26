@@ -142,18 +142,9 @@ The JWK x5c parameter MAY be used to provide X.509 representations of keys provi
 				Description: "LogoURI is an URL string that references a logo for the client.",
 			},
 			"metadata_json": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				ValidateFunc:  validation.StringIsJSON,
-				ConflictsWith: []string{"metadata"},
-			},
-			"metadata": {
-				Type:     schema.TypeMap,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				ConflictsWith: []string{"metadata_json"},
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringIsJSON,
 			},
 			"owner": {
 				Type:        schema.TypeString,
@@ -431,32 +422,13 @@ func dataFromClient(data *schema.ResourceData, oAuthClient *hydra.OAuth2Client) 
 	dataFromJWKS(data, jwks, "jwk")
 	data.Set("jwks_uri", oAuthClient.GetJwksUri())
 	data.Set("logo_uri", oAuthClient.GetLogoUri())
-	if metadata, ok := oAuthClient.Metadata.(map[string]interface{}); ok {
-		// Check if any nested maps or non-string values exist in metadata
-		useMetadataJSON := false
-		for _, v := range metadata {
-			switch v.(type) {
-			case string:
-				continue
-			default:
-				useMetadataJSON = true
-			}
+	if metadata := oAuthClient.Metadata; metadata != nil {
+		metadataJSON, err := json.Marshal(metadata)
+		if err != nil {
+			return err
 		}
-		// If metadata contains nested structures or non-string values, use metadata_json
-		if useMetadataJSON {
-			metadataJSON, err := json.Marshal(metadata)
-			if err != nil {
-				return err
-			}
-			data.Set("metadata_json", string(metadataJSON))
-			data.Set("metadata", nil)
-		} else {
-			// If no nested structures or non-string values, use metadata
-			data.Set("metadata", metadata)
-			data.Set("metadata_json", nil)
-		}
+		data.Set("metadata_json", string(metadataJSON))
 	} else {
-		data.Set("metadata", nil)
 		data.Set("metadata_json", nil)
 	}
 	data.Set("owner", oAuthClient.Owner)
@@ -526,8 +498,6 @@ func dataToClient(data *schema.ResourceData) *hydra.OAuth2Client {
 		if err == nil {
 			client.Metadata = metadata
 		}
-	} else if metadata, ok := data.GetOk("metadata"); ok {
-		client.Metadata = metadata.(map[string]interface{})
 	}
 	if o, ok := data.GetOk("owner"); ok {
 		client.Owner = ptr(o.(string))
