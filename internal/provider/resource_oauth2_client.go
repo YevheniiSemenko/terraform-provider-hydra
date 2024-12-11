@@ -109,14 +109,9 @@ An iss (issuer) query parameter and a sid (session ID) query parameter MAY be in
 if either is included, both MUST be.`,
 			},
 			"grant_types": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{
-						"authorization_code", "client_credentials", "implicit", "refresh_token", "urn:ietf:params:oauth:grant-type:jwt-bearer",
-					}, false),
-				},
+                Type:     schema.TypeList,
+    			Elem:     &schema.Schema{Type: schema.TypeString},
+    			Optional: true,
 			},
 			"jwk": {
 				Type:     schema.TypeList,
