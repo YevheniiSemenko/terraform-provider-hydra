@@ -109,9 +109,9 @@ An iss (issuer) query parameter and a sid (session ID) query parameter MAY be in
 if either is included, both MUST be.`,
 			},
 			"grant_types": {
-                Type:     schema.TypeList,
-    			Elem:     &schema.Schema{Type: schema.TypeString},
-    			Optional: true,
+				Type:     schema.TypeList,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
 			},
 			"jwk": {
 				Type:     schema.TypeList,
